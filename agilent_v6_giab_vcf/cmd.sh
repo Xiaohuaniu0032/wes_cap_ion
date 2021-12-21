@@ -1,0 +1,1 @@
+perl get_wes_var_from_giab_vcf.pl /data/fulongfei/bam/fsz/wes_cap_plus_ion/NA12878_giab_VCF/HG001_GRCh37_1_22_v4.2.1_benchmark.vcf /data/fulongfei/bam/fsz/wes_cap_plus_ion/agilent_v6_bed/V6_S07604514_Covered_chr.bed >agilent_v6_var_giab.vcf
