@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use File::Basename;
 use Getopt::Long;
-use FindBin;
+use FindBin qw/$Bin/;
 
 my ($TSVC_variants_vcf_file,$fasta,$QUAL_cutoff,$sample_name,$gold_vcf_file,$outdir);
 
@@ -66,7 +66,7 @@ print O "$cmd\n";
 
 # step4: stat sensitivity and PPV according the gold vcf file
 my $indel_hs_vcf = "$Bin/raw_394_indel_hs_file/hs_vcf_from_new_rs.vcf";
-my $cmd = "perl $Bin/script/stat_394_indel_hs_Sens_PPV.pl $qual_pass_vcf $indel_hs_vcf $sample_name $outdir";
+$cmd = "perl $Bin/script/stat_394_indel_hs_Sens_PPV.pl $qual_pass_vcf $indel_hs_vcf $sample_name $outdir";
 print O "$cmd\n";
 
 close O;
