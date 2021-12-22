@@ -19,6 +19,8 @@ while (<VCF>){
 		my $gt = $gt_info[0];
 		if ($gt ne "0/0" and $gt ne "./."){
 			print O "$_\n";
+		}else{
+			#print "FilterOut\t$_\n";
 		}
 	}
 }

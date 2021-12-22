@@ -51,22 +51,21 @@ open O, ">$runsh" or die;
 # -c:check REF alleles and exit (e), warn (w), exclude (x), or set (s)
 my $norm_vcf = "$outdir/$sample_name\.TSVC_variants.bcfnorm.vcf";
 my $cmd = "bcftools norm -f $fasta -m - -c w $TSVC_variants_vcf_file >$norm_vcf";
-print O "$cmd\n";
+print O "$cmd\n\n";
 
 # step2: remove 0/0 and ./. genotype call
 my $gt_filter_vcf = "$outdir/$sample_name\.TSVC_variants.bcfnorm.gt_filter.vcf";
 $cmd = "perl $Bin/script/filter_bcfnorm_vcf.pl $norm_vcf $gt_filter_vcf";
-print O "$cmd\n";
+print O "$cmd\n\n";
 
 # step3: filter QUAL
 my $qual_pass_vcf = "$outdir/$sample_name\.TSVC_variants.bcfnorm.gt_filter.qual_pass.vcf";
 my $qual_nopass_vcf = "$outdir/$sample_name\.TSVC_variants\.bcfnorm.gt_filter.qual_nopass.vcf";
 $cmd = "perl $Bin/script/filter_QUAL.pl $gt_filter_vcf $QUAL_cutoff $qual_pass_vcf \>$qual_nopass_vcf";
-print O "$cmd\n";
+print O "$cmd\n\n";
 
 # step4: stat sensitivity and PPV according the gold vcf file
-my $indel_hs_vcf = "$Bin/raw_394_indel_hs_file/hs_vcf_from_new_rs.vcf";
-$cmd = "perl $Bin/script/stat_394_indel_hs_Sens_PPV.pl $qual_pass_vcf $indel_hs_vcf $sample_name $outdir";
-print O "$cmd\n";
+$cmd = "perl $Bin/script/stat_394_indel_hs_Sens_PPV.pl $qual_pass_vcf $gold_vcf_file $sample_name $outdir";
+print O "$cmd\n\n";
 
 close O;

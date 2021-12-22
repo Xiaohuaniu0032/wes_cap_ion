@@ -3,10 +3,13 @@ use warnings;
 
 my ($gt_filter_vcf,$qual_cutoff,$outfile_vcf) = @ARGV;
 
+print "Qual filter cutoff is: $qual_cutoff\n";
+
 open O, ">$outfile_vcf" or die;
 
 open IN, "$gt_filter_vcf" or die;
 while (<IN>){
+	chomp;
 	if (/^\#/){
 		print O "$_\n";
 	}else{

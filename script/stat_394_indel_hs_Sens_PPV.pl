@@ -1,12 +1,11 @@
 use strict;
 use warnings;
 
-my ($tvc_vcf_file, $sample_name, $outdir) = @ARGV;
+my ($tvc_vcf_file, $indel_hs_vcf, $sample_name, $outdir) = @ARGV;
 
 # Please note: giab vcf was extract based on agilent v6 bed region from giab WGS vcf.
 # So in theory, all variants in tvc should be equal with agilent.giab.vcf. this means 100% sens and 100 spec.
 
-my $indel_hs_vcf = "$Bin/raw_394_indel_hs_file/hs_vcf_from_new_rs.vcf";
 # 检查indel hs文件是否存在
 if (!-e $indel_hs_vcf){
 	die "can not find indel hs file: $indel_hs_vcf\n";
@@ -36,12 +35,25 @@ my $indel_call_num = 0;
 my $indel_not_call_num = 0;
 
 my $indel_var_num = 0;
+
 open HS, "$indel_hs_vcf" or die;
 while (<HS>){
 	chomp;
 	next if (/^\#/);
 	$indel_var_num += 1; #有多少个indel位点
 	my @arr = split /\t/;
+
+	# NA12878 giab VCF染色体以1/2/3..命名
+	# 394个indel热点是从dbSNP数据库中得到的,dbSNP build 155以NC_000001.10命名染色体,indel hs文件染色体已经转换为chr命名
+	# 如果需要和NA12878 giab数据库比较,染色体命名需处理一下
+	
+	my $chr;
+	if ($arr[0] =~ /^chr/){
+		$chr = $arr[0];
+	}else{
+		$chr = "chr".$arr[0]; # na12878 giab染色体只包含1-22,不包含X/Y
+	}
+
 	# 可能会存在多个alt alleles
 	my $alt = $arr[4];
 	
@@ -51,17 +63,15 @@ while (<HS>){
 		# 多个alt allele
 		my @alts = split /\,/, $alt;
 		for my $alt (@alts){
-			my $var = "$arr[0]\t$arr[1]\t$arr[3]\t$alt"; # chr/pos/ref/alt
-			if (exists $tvc_vars{$val}){
+			my $var = "$chr\t$arr[1]\t$arr[3]\t$alt"; # chr/pos/ref/alt
+			if (exists $tvc_vars{$var}){
 				$flag = 1;
-				last;
 			}
 		}
 	}else{
-		my $var = "$arr[0]\t$arr[1]\t$arr[3]\t$arr[4]";
+		my $var = "$chr\t$arr[1]\t$arr[3]\t$arr[4]";
 		if (exists $tvc_vars{$var}){
 			$flag = 1;
-			last;
 		}
 	}
 
@@ -74,7 +84,7 @@ while (<HS>){
 		$indel_not_call_num += 1;
 	}
 
-	print SNES "$if_call\t$_\n";
+	print SENS "$if_call\t$_\n";
 
 }
 close HS;
@@ -86,7 +96,7 @@ my $indel_num = $indel_call_num + $indel_not_call_num;
 my $indel_sens = sprintf "%.2f", $indel_call_num/$indel_num * 100;
 print "indel_called_num\tindel_not_called_num\tindel_total_num\tindel_sensitivity(\%)\n";
 print "$indel_call_num\t$indel_not_call_num\t$indel_num\t$indel_sens\n";
-
+print "\n";
 
 
 
@@ -106,7 +116,15 @@ while (<INDEL>){
 	chomp;
 	next if (/^\#/);
 	my @arr = split /\t/;
-	my $ref = "$arr[0]\t$arr[1]\t$arr[3]"; # chr/pos/ref
+
+	my $chr;
+	if ($arr[0] =~ /^chr/){
+		$chr = $arr[0];
+	}else{
+		$chr = "chr".$arr[0]; # na12878 giab染色体只包含1-22,不包含X/Y
+	}
+
+	my $ref = "$chr\t$arr[1]\t$arr[3]"; # chr/pos/ref
 	$hs_indel{$ref} = $arr[4];
 }
 close INDEL;
@@ -126,8 +144,9 @@ while (<TVC>){
 	my $ref = "$arr[0]\t$arr[1]\t$arr[3]"; # chr/pos/ref
 	my $alt = $arr[4];
 	# 先检查indel hs是否存在这个ref位点. 如果存在,检查tvc alt是否在indel hs alt alleles中
-	my $tp_flag;
-	if (exits $hs_indel{$ref}){
+	my $tp_flag = 0;
+
+	if (exists $hs_indel{$ref}){
 		my $hs_indel_alt_allele = $hs_indel{$ref};
 		if ($hs_indel_alt_allele =~ /\,/){ # TSVC文件已经经过了bcf norm,不会出现alt列包含多个alt alleles的现象
 			my @hs_indel_alt_allele = split /\,/, $hs_indel_alt_allele;
