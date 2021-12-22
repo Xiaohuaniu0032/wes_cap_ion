@@ -67,7 +67,7 @@ print O "$cmd\n\n";
 # step4: stat sensitivity and PPV according the gold vcf file
 # 判断用哪个统计脚本
 # indel脚本只统计gold indel vcf
-# giab脚本会统计wes na 12878 SNV/InDel
+# giab脚本会统计wes NA12878 SNV/InDel
 
 my $gvcf_name = basename $gold_vcf_file;
 if ($gvcf_name eq "hs_vcf_from_new_rs.vcf"){
