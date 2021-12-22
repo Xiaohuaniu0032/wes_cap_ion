@@ -6,14 +6,18 @@ my ($tvc_vcf_file, $giab_vcf_file, $sample_name, $outdir) = @ARGV;
 # Please note: giab vcf was extract based on agilent v6 bed region from giab WGS vcf.
 # So in theory, all variants in tvc should be equal with agilent.giab.vcf. this means 100% sens and 100 spec.
 
+# 检查indel hs文件是否存在
+if (! -e $giab_vcf_file){
+	die "can not find giab wes vcf file: $giab_vcf_file\n";
+}
 
-my $stat_file_for_sensitivity = "$outdir/$sample_name\.Sensitivity.xls";
+
+
 my $stat_file_for_ppv = "$outdir/$sample_name\.PPV.xls";
 
-############################## first, check sensitivity ##############################
-# for sensitivity, check if all variants in giab vcf are called by tvc
-print "check snv/indel sensitivity...\n";
-
+##################### 统计SNV/InDel灵敏度 #################
+print "[INFO] Check snv/indel sensitivity...\n";
+my $stat_file_for_sensitivity = "$outdir/$sample_name\.Sensitivity.xls";
 open SENS, ">$stat_file_for_sensitivity" or die;
 
 my %tvc_vars;
@@ -22,7 +26,7 @@ while (<IN>){
 	chomp;
 	next if (/^\#/);
 	my @arr = split /\t/;
-	my $var = "$arr[0]\t$arr[1]\t$arr[3]\t$arr[4]"; # chr/pos/ref/alt. here i do not consider het or homo
+	my $var = "$arr[0]\t$arr[1]\t$arr[3]\t$arr[4]"; # chr/pos/ref/alt.
 	$tvc_vars{$var} = 1;
 }
 close IN;
@@ -39,7 +43,13 @@ while (<GIAB>){
 	chomp;
 	next if (/^\#/);
 	my @arr = split /\t/;
-	my $chr = "chr".$arr[0];
+
+	my $chr;
+	if ($arr[0] =~ /^chr/){
+		$chr = $arr[0];
+	}else{
+		$chr = "chr".$arr[0];
+	}
 
 	my $var = "$chr\t$arr[1]\t$arr[3]\t$arr[4]"; # chr/pos/ref/alt
 
@@ -92,10 +102,9 @@ print "$indel_call_num\t$indel_not_call_num\t$indel_num\t$indel_sens\n";
 
 
 
-############################## second, check ppv ##############################
-# for ppv, check if all varaints in tvc are not included in giab vcf
-print "\n\ncheck snv/indel PPV...\n";
-
+################# 统计SNV/InDel PPV #############
+print "\n[INFO] Check snv/indel PPV...\n";
+my $stat_file_for_ppv = "$outdir/$sample_name\.PPV.xls";
 open SPEC, ">$stat_file_for_ppv" or die;
 
 
@@ -108,7 +117,13 @@ while (<GIAB>){
 	chomp;
 	next if (/^\#/);
 	my @arr = split /\t/;
-	my $chr = "chr".$arr[0];
+	
+	my $chr;
+	if ($arr[0] =~ /^chr/){
+		$chr = $arr[0];
+	}else{
+		$chr = "chr".$arr[0];
+	}
 
 	my $var_type;
 	my $len_ref = length($arr[3]);

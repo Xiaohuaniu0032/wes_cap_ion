@@ -65,7 +65,21 @@ $cmd = "perl $Bin/script/filter_QUAL.pl $gt_filter_vcf $QUAL_cutoff $qual_pass_v
 print O "$cmd\n\n";
 
 # step4: stat sensitivity and PPV according the gold vcf file
-$cmd = "perl $Bin/script/stat_394_indel_hs_Sens_PPV.pl $qual_pass_vcf $gold_vcf_file $sample_name $outdir";
-print O "$cmd\n\n";
+# 判断用哪个统计脚本
+# indel脚本只统计gold indel vcf
+# giab脚本会统计wes na 12878 SNV/InDel
+
+my $gvcf_name = basename $gold_vcf_file;
+if ($gvcf_name eq "hs_vcf_from_new_rs.vcf"){
+	# 通统计indel位点灵敏度\PPV
+	$cmd = "perl $Bin/script/Only_InDel_Sens_PPV.pl $qual_pass_vcf $gold_vcf_file $sample_name $outdir";
+	print "Calculate only indel Sens/PPV\n";
+	print O "$cmd\n";
+}else{
+	# 统计giab SNV/InDel位点
+	$cmd = "perl $Bin/script/For_giab_NA12878_WES_Sens_PPV.pl $qual_pass_vcf $gold_vcf_file $sample_name $outdir";
+	print "Calculate GIAB NA12878 SNV/InDel Sens/PPV\n";
+	print O "$cmd\n";
+}
 
 close O;

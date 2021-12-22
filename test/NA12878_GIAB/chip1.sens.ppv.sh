@@ -4,5 +4,4 @@ perl /data/fulongfei/git_repo/wes_cap_ion/script/filter_bcfnorm_vcf.pl /data/ful
 
 perl /data/fulongfei/git_repo/wes_cap_ion/script/filter_QUAL.pl /data/fulongfei/git_repo/wes_cap_ion/test/NA12878_GIAB/chip1.TSVC_variants.bcfnorm.gt_filter.vcf 10 /data/fulongfei/git_repo/wes_cap_ion/test/NA12878_GIAB/chip1.TSVC_variants.bcfnorm.gt_filter.qual_pass.vcf >/data/fulongfei/git_repo/wes_cap_ion/test/NA12878_GIAB/chip1.TSVC_variants.bcfnorm.gt_filter.qual_nopass.vcf
 
-perl /data/fulongfei/git_repo/wes_cap_ion/script/stat_394_indel_hs_Sens_PPV.pl /data/fulongfei/git_repo/wes_cap_ion/test/NA12878_GIAB/chip1.TSVC_variants.bcfnorm.gt_filter.qual_pass.vcf /data/fulongfei/git_repo/wes_cap_ion/agilent_v6_giab_vcf/agilent_v6_var_giab.vcf chip1 /data/fulongfei/git_repo/wes_cap_ion/test/NA12878_GIAB
-
+perl /data/fulongfei/git_repo/wes_cap_ion/script/For_giab_NA12878_WES_Sens_PPV.pl /data/fulongfei/git_repo/wes_cap_ion/test/NA12878_GIAB/chip1.TSVC_variants.bcfnorm.gt_filter.qual_pass.vcf /data/fulongfei/git_repo/wes_cap_ion/agilent_v6_giab_vcf/agilent_v6_var_giab.vcf chip1 /data/fulongfei/git_repo/wes_cap_ion/test/NA12878_GIAB
