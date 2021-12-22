@@ -45,12 +45,12 @@ chip1.PPV.xls
 ```
 
 ##### File Spec
-`<sample_name>.TSVC_variants.bcfnorm.vcf`: the file generate by `bcftools norm`
-`<sample_name>.TSVC_variants.bcfnorm.gt_filter.vcf`: the file generate by filtering out `./.` and `0/0` genotypes
-`<sample_name>.TSVC_variants.bcfnorm.gt_filter.qual_pass.vcf`: the file generate by filter out low QUAL
-`<sample_name>.TSVC_variants.bcfnorm.gt_filter.qual_nopass.vcf`: this file contains the low QUAL variants
-`<sample_name>.Sensitivity.xls`: intermediate file used for check sensitivity
-`<sample_name>.PPV.xls`: intermediate file used for check PPV
+* `<sample_name>.TSVC_variants.bcfnorm.vcf`: the file generate by `bcftools norm`
+* `<sample_name>.TSVC_variants.bcfnorm.gt_filter.vcf`: the file generate by filtering out `./.` and `0/0` genotypes
+* `<sample_name>.TSVC_variants.bcfnorm.gt_filter.qual_pass.vcf`: the file generate by filter out low QUAL
+* `<sample_name>.TSVC_variants.bcfnorm.gt_filter.qual_nopass.vcf`: this file contains the low QUAL variants
+* `<sample_name>.Sensitivity.xls`: intermediate file used for check sensitivity
+* `<sample_name>.PPV.xls`: intermediate file used for check PPV
 ``
 
 ### FAQ
