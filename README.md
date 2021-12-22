@@ -1,5 +1,6 @@
 ﻿# wes_cap_ion
 WES Agilent V6 Capture + Ion Sequencing
+
 This repo is used to calculate the SNV/InDel Sensitivity and PPV from TVC's TSVC_variants.vcf file, which is the final variant call results in Ion Torrent Platform (Torrent Suite Software) 
 
 ### Usage
