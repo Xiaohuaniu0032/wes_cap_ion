@@ -71,7 +71,7 @@ print O "$cmd\n\n";
 
 my $gvcf_name = basename $gold_vcf_file;
 if ($gvcf_name eq "hs_vcf_from_new_rs.vcf"){
-	# 通统计indel位点灵敏度\PPV
+	# 统计indel位点灵敏度\PPV
 	$cmd = "perl $Bin/script/Only_InDel_Sens_PPV.pl $qual_pass_vcf $gold_vcf_file $sample_name $outdir";
 	print "Calculate only indel Sens/PPV\n";
 	print O "$cmd\n";
