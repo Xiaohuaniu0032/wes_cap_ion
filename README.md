@@ -51,7 +51,21 @@ chip1.PPV.xls
 * `<sample_name>.TSVC_variants.bcfnorm.gt_filter.qual_nopass.vcf`: this file contains the low QUAL variants
 * `<sample_name>.Sensitivity.xls`: intermediate file used for check sensitivity
 * `<sample_name>.PPV.xls`: intermediate file used for check PPV
-``
+
+### 程序最后给出的统计结果如下（输出到屏幕）
+```
+[INFO] Check snv/indel sensitivity...
+snv_called_num  snv_not_called_num      snv_total_num   snv_sensitivity(%)
+39615   7532    47147   84.02
+indel_called_num        indel_not_called_num    indel_total_num indel_sensitivity(%)
+1723    2216    3939    43.74
+
+[INFO] Check snv/indel PPV...
+tvc_snv_tp      tvc_snv_fp      tvc_snv_tp_fp   tvc_snv_PPV(%)
+39615   8116    47731   83.00
+tvc_indel_tp    tvc_indel_fp    tvc_indel_tp_fp tvc_indel_PPV(%)
+1726    894     2620    65.88
+```
 
 ### FAQ
 * 如果只要统计371个InDel位点的灵敏度和特异性，主脚本不必指明`-gvcf`参数
