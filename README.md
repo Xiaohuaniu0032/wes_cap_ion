@@ -52,7 +52,7 @@ chip1.PPV.xls
 * `<sample_name>.Sensitivity.xls`: intermediate file used for check sensitivity
 * `<sample_name>.PPV.xls`: intermediate file used for check PPV
 
-#### 程序最后给出的统计结果如下（输出到屏幕）[`-gvcf`参数不同，最后的结果略有差异]
+#### 程序最后给出的统计结果如下（输出到屏幕）[`-gvcf`参数不同，最后的结果格式略有差异]
 ```
 [INFO] Check snv/indel sensitivity...
 snv_called_num  snv_not_called_num      snv_total_num   snv_sensitivity(%)
