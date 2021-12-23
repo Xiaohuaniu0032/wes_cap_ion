@@ -1,4 +1,4 @@
-# 统计SVN/InDel灵敏度、阳性预测值PPV
+# 统计SNV/InDel灵敏度、阳性预测值PPV
 
 
 ## 背景
