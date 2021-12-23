@@ -72,7 +72,9 @@ perl /data/fulongfei/git_repo/wes_cap_ion/script/For_giab_NA12878_WES_Sens_PPV.p
 * `chip1.Sensitivity.xls`：统计灵敏度的中间结果文件，方便核实位点
 * `chip1.PPV.xls`：统计PPV的中间结果文件
 
-`*.Sensitivity.xls`文件格式如下：
+
+**`*.Sensitivity.xls`文件格式如下：**
+
 ```
 Called  SNV     chr1    808922  G       A       1       808922  rs6594027       G       A       50      PASS
     platforms=3;platformnames=PacBio,Illumina,10X;datasets=3;datasetnames=CCS15kb_20kb,HiSeqPE300x,10XChromiumLR;callsets=5;callsetnames=CCS15kb_20kbDV,CCS15kb_20kbGATK4,HiSeqPE300xGATK,10XLRGATK,HiSeqPE300xfreebayes;datasetsmissingcall=CGnormal,IonExome,SolidSE75bp;callable=CS_CCS15kb_20kbDV_callable,CS_CCS15kb_20kbGATK4_callable;difficultregion=HG001.hg37.300x.bam.bilkentuniv.010920.dups,hg19.segdups_sorted_merged,lowmappabilityall_GRCh38equivalent,mm-2-merged  GT:PS:DP:ADALL:AD:GQ    1/1:.:608:0,242:0,52:153
@@ -87,7 +89,8 @@ NotCalled       InDel   chr1    874950  T       TCCCTGGAGGACC   1       874950  
 >标注第一列、第二列是为了方便核实结果，快速查找哪些没检出
 
 
-`*.PPV.xls`文件格式如下：
+**`*.PPV.xls`文件格式如下：**
+
 ```
 FP      SNV     chr1    14907   A       G       chr1    14907   .       A       G       1448.65 PASS    AF=0.935484;AO=172;DP=185;FAO=174;FDP=186;FDVR=5;FR=.;FRO=12;FSAF=96;FSAR=78;FSRF=9;FSRR=3;FWDB=0.0130824;FXX=0.00534731;HRUN=2;HS_ONLY=0;LEN=1;MLLD=69.5713;OALT=G;OID=.;OMAPALT=G;OPOS=14907;OREF=A;PB=0.5;PBP=1;QD=31.1537;RBI=0.0239989;REFB=-0.0141307;REVB=0.0201196;RO=11;SAF=94;SAR=78;SRF=8;SRR=3;SSEN=0;SSEP=0;SSSB=-0.02086;STB=0.512964;STBP=0.168;TYPE=snp;VARB=0.00512409 GT:GQ:DP:FDP:RO:FRO:AO:FAO:AF:SAR:SAF:SRF:SRR:FSAR:FSAF:FSRF:FSRR       1/1:18:185:186:11:12:172:174:0.935484:78:94:8:3:78:96:9:3
 FP      SNV     chr1    14930   A       G       chr1    14930   .       A       G       1886.14 PASS    AF=0.9375;AO=225;DP=242;FAO=225;FDP=240;FDVR=10;FR=.;FRO=15;FSAF=120;FSAR=105;FSRF=9;FSRR=6;FWDB=0.0033383;FXX=0.00826412;HRUN=2;HS_ONLY=0;LEN=1;MLLD=140.61;OALT=G;OID=.;OMAPALT=G;OPOS=14930;OREF=A;PB=0.5;PBP=1;QD=31.4356;RBI=0.016784;REFB=-0.022664;REVB=-0.0164486;RO=15;SAF=120;SAR=105;SRF=9;SRR=6;SSEN=0;SSEP=0;SSSB=-0.00796051;STB=0.504187;STBP=0.587;TYPE=snp;VARB=0.00138538     GT:GQ:DP:FDP:RO:FRO:AO:FAO:AF:SAR:SAF:SRF:SRR:FSAR:FSAF:FSRF:FSRR
