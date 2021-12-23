@@ -12,9 +12,6 @@ if (! -e $giab_vcf_file){
 }
 
 
-
-my $stat_file_for_ppv = "$outdir/$sample_name\.PPV.xls";
-
 ##################### 统计SNV/InDel灵敏度 #################
 print "[INFO] Check snv/indel sensitivity...\n";
 my $stat_file_for_sensitivity = "$outdir/$sample_name\.Sensitivity.xls";
