@@ -27,7 +27,8 @@ if (not defined $QUAL_cutoff){
 }
 
 if (not defined $gold_vcf_file){
-	$gold_vcf_file = "$Bin/raw_394_indel_hs_file/hs_vcf_from_new_rs.vcf";
+	#$gold_vcf_file = "$Bin/raw_394_indel_hs_file/hs_vcf_from_new_rs.vcf";
+	$gold_vcf_file = "$Bin/raw_394_indel_hs_file/indel.bcfnorm.gold.vcf"; # indel.bcfnorm.gold.vcf -> hs_vcf_from_new_rs.bcfnorm.vcf
 }
 
 if (!-e $gold_vcf_file){
@@ -70,10 +71,21 @@ print O "$cmd\n\n";
 # giab脚本会统计wes NA12878 SNV/InDel
 
 my $gvcf_name = basename $gold_vcf_file;
-if ($gvcf_name eq "hs_vcf_from_new_rs.vcf"){
+if ($gvcf_name eq "indel.bcfnorm.gold.vcf"){
 	# 统计indel位点灵敏度\PPV
 	$cmd = "perl $Bin/script/Only_InDel_Sens_PPV.pl $qual_pass_vcf $gold_vcf_file $sample_name $outdir";
 	print "Calculate only indel Sens/PPV\n";
+	print O "$cmd\n\n";
+
+	# 输出NotCalled的详细信息，从TSVC_variants.vcf得到
+	my $sens_vcf = "$outdir/$sample_name\.Sensitivity.xls";
+	my $not_call_file = "$outdir/$sample_name\.NotCalled.xls";
+	$cmd = "perl $Bin/script/Only_InDel_NotCalled_Detail.pl $sens_vcf $TSVC_variants_vcf_file $not_call_file";
+	print O "$cmd\n\n";
+
+	# 统计indel热点深度
+	my $depth_rs = "$outdir/$sample_name\.indel.hs.depth.xls";
+	$cmd = "perl $Bin/script/Only_InDel_HS_Depth.pl $gold_vcf_file $TSVC_variants_vcf_file $depth_rs\n";
 	print O "$cmd\n";
 }else{
 	# 统计giab SNV/InDel位点
