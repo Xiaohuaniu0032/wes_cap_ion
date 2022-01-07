@@ -11,7 +11,7 @@ GetOptions(
 	"fa:s"   => \$fasta,                              # Need
 	"QUAL:i" => \$QUAL_cutoff,                        # Optional <Default: 10>
 	"s:s"    => \$sample_name,                        # Need
-	"gvcf:s" => \$gold_vcf_file,                      # Optional <Default: Bin/raw_394_indel_hs_file/hs_vcf_from_new_rs.vcf>
+	"gvcf:s" => \$gold_vcf_file,                      # Optional <Default: Bin/indel_hs_2022-1-6-xh/YH-indel.2021-1-6.vcf>
 	"od:s"   => \$outdir,                             # Need
 	) or die "unknown args\n";
 
@@ -27,14 +27,12 @@ if (not defined $QUAL_cutoff){
 }
 
 if (not defined $gold_vcf_file){
-	#$gold_vcf_file = "$Bin/raw_394_indel_hs_file/hs_vcf_from_new_rs.vcf";
-	$gold_vcf_file = "$Bin/raw_394_indel_hs_file/indel.bcfnorm.gold.vcf"; # indel.bcfnorm.gold.vcf -> hs_vcf_from_new_rs.bcfnorm.vcf
+	$gold_vcf_file = "$Bin/indel_hs_2022-1-6-xh/YH-indel.2021-1-6.vcf";
 }
 
 if (!-e $gold_vcf_file){
 	die "can not find gold vcf to compare: $gold_vcf_file\n";
 }
-
 
 
 # process steps
@@ -50,6 +48,7 @@ open O, ">$runsh" or die;
 # see https://samtools.github.io/bcftools/bcftools.html#norm for detail.
 # -m:split multiallelics (-) or join biallelics (+)
 # -c:check REF alleles and exit (e), warn (w), exclude (x), or set (s)
+
 my $norm_vcf = "$outdir/$sample_name\.TSVC_variants.bcfnorm.vcf";
 my $cmd = "bcftools norm -f $fasta -m - -c w $TSVC_variants_vcf_file >$norm_vcf";
 print O "$cmd\n\n";
@@ -66,13 +65,9 @@ $cmd = "perl $Bin/script/filter_QUAL.pl $gt_filter_vcf $QUAL_cutoff $qual_pass_v
 print O "$cmd\n\n";
 
 # step4: stat sensitivity and PPV according the gold vcf file
-# 判断用哪个统计脚本
-# indel脚本只统计gold indel vcf
-# giab脚本会统计wes NA12878 SNV/InDel
-
 my $gvcf_name = basename $gold_vcf_file;
-if ($gvcf_name eq "indel.bcfnorm.gold.vcf"){
-	# 统计indel位点灵敏度\PPV
+if ($gvcf_name eq "YH-indel.2021-1-6.vcf"){
+	# only 394 YH indel
 	$cmd = "perl $Bin/script/Only_InDel_Sens_PPV.pl $qual_pass_vcf $gold_vcf_file $sample_name $outdir";
 	print "Calculate only indel Sens/PPV\n";
 	print O "$cmd\n\n";
