@@ -8,92 +8,82 @@ my ($tvc_vcf_file, $indel_hs_vcf, $sample_name, $outdir) = @ARGV;
 
 # 检查indel hs文件是否存在
 if (!-e $indel_hs_vcf){
-	die "can not find indel hs file: $indel_hs_vcf\n";
+	die "can not find $indel_hs_vcf, please check these file(s)\n";
 }
 
+my %skip_rs;
+open VCF, "$indel_hs_vcf" or die;
+while (<VCF>){
+	chomp;
+	next if (/^$/);
+	next if (/^\#/);
+	my @arr = split /\t/;
+	my $alt = $arr[4];
+	if ($alt =~ /\,/){
+		# this pos has >=2 alt alleles
+		# in giab NA12878, multi allele var is about 1%, so do not consider there multi allele vars will not affect the final results.
+		$skip_rs{$arr[2]} = 1;
+	}
+}
+close VCF;
 
 ################# 统计InDel灵敏度 ################
+print "check indel sensitivity...\n";
 
+# read tvc results, and for each var in gold vcf, check if it is called by TVC
+
+# first read tvc results
 my %tvc_vars;
 open IN, "$tvc_vcf_file" or die;
 while (<IN>){
 	chomp;
 	next if (/^\#/);
 	my @arr = split /\t/;
-	next if ($arr[2] !~ /^rs/);
-	
-	my $rs;
-	if ($arr[2] =~ /\;/){
-		my @rs = split /\;/, $arr[2];
-		$rs = $rs[0];
-	}else{
-		$rs = $arr[2];
-	}
-
-	my $var = "$arr[0]\t$arr[1]\t$arr[3]\t$arr[4]"; # chr/pos/ref/alt
-	push @{$tvc_vars{$rs}}, $var;  # 一个rs可能有多个变异
+	my $var = "$arr[0]\t$arr[1]\t$arr[3]\t$arr[4]"; # chr/pos/ref/alt. here we do not consider GT
+	$tvc_vars{$var} = 1;
 }
 
-# 检查indel hs文件中，每个rs是否被tvc检出了
-print "check indel sensitivity...\n";
+# then check each var in gold vcf
 
 my $stat_file_for_sensitivity = "$outdir/$sample_name\.Sensitivity.xls";
 open SENS, ">$stat_file_for_sensitivity" or die;
 
-my $indel_call_num = 0;
-my $indel_not_call_num = 0;
+my $Log = "$outdir/$sample_name\.Sens.PPV.Result.txt";
+open O, ">$Log" or die;
 
-my $indel_var_num = 0;
-
-my %called_rs;
-my %all_rs;
+my ($called_num,$not_called_num) = (0,0);
 
 open HS, "$indel_hs_vcf" or die;
 while (<HS>){
 	chomp;
 	next if (/^\#/);
-	#$indel_var_num += 1; #有多少个indel位点
+	next if (/^$/);
 	my @arr = split /\t/;
-	$all_rs{$arr[2]} = 1; # all rs
-
-	# NA12878 giab VCF染色体以1/2/3..命名
-	# 394个indel热点是从dbSNP数据库中得到的,dbSNP build 155以NC_000001.10命名染色体,indel hs文件染色体已经转换为chr命名
-	# 如果需要和NA12878 giab数据库比较,染色体命名需处理一下
 	
+	my $rs = $arr[2];
+	if (exists $skip_rs{$rs}){
+		print O "###[This Var will be skipped for multi alt allele] => $_\n\n";
+	}
+
+	my $alt = $arr[4];
+	next if ($alt =~ /\,/); # skip multi alt vars
+
 	my $chr;
 	if ($arr[0] =~ /^chr/){
 		$chr = $arr[0];
 	}else{
-		$chr = "chr".$arr[0]; # na12878 giab染色体只包含1-22,不包含X/Y
+		$chr = "chr".$arr[0];
 	}
 
-	my $find_flag;
-	if (exists $tvc_vars{$arr[2]}){
-		my $var = "$chr\t$arr[1]\t$arr[3]\t$arr[4]"; # chr/pos/ref/alt;
-		my @tvc_vars = @{$tvc_vars{$arr[2]}};
-		my $item_flag = 0;
-		for my $item (@tvc_vars){
-			if ($var eq $item){
-				$item_flag = 1;
-			}
-		}
-
-		# check if any one of tvc call match golden hs indel 
-		if ($item_flag == 1){
-			$find_flag = 1
-		}else{
-			$find_flag = 0;
-		}
-	}else{
-		$find_flag = 0;
-	}
+	my $var = "$chr\t$arr[1]\t$arr[3]\t$arr[4]"; # chr/pos/ref/alt
 
 	my $if_call;
-	if ($find_flag == 1){
+	if (exists $tvc_vars{$var}){
 		$if_call = "Called";
-		$called_rs{$arr[2]} = 1;	
+		$called_num += 1;
 	}else{
 		$if_call = "NotCalled";
+		$not_called_num += 1;
 	}
 
 	print SENS "$if_call\t$_\n";
@@ -104,26 +94,24 @@ close SENS;
 
 
 # stat indel sens
-my $rs_all_num = scalar (keys %all_rs);
-my $called_rs_num = scalar (keys %called_rs);
-my $indel_sens = sprintf "%.2f", $called_rs_num / $rs_all_num * 100;
+my $indel_all_num = $called_num + $not_called_num;
+my $indel_sens = sprintf "%.2f", $called_num / $indel_all_num * 100;
 
-my $not_called_rs_num = $rs_all_num - $called_rs_num;
-
-print "indel_called_num\tindel_not_called_num\tindel_total_num\tindel_sensitivity(\%)\n";
-#print "$indel_call_num\t$indel_not_call_num\t$indel_num\t$indel_sens\n";
-print "$called_rs_num\t$not_called_rs_num\t$rs_all_num\t$indel_sens\n";
-print "\n";
+print O "indel_called_num\tindel_not_called_num\tindel_total_num\tindel_sensitivity(\%)\n";
+print O "$called_num\t$not_called_num\t$indel_all_num\t$indel_sens\n";
+close O;
 
 
-
-################# 统计InDel PPV 阳性预测值 (检出阳性中,有多少是真阳性) ################
 
 # 针对300+ indel位点，无法统计PPV。因为除了这300+真阳性位点，WES中还有其他真阳性位点，而我们并没有这些真阳性位点。
 
-print "check indel PPV...\n";
-print "Skip stat hs indel PPV for we lack a complete True-Positive variants list file\n";
+################# 统计InDel PPV 阳性预测值 (检出阳性中,有多少是真阳性) ################
 
+#print "check indel PPV...\n";
+#print "Skip stat hs indel PPV for we lack a complete True-Positive variants list file\n";
+
+
+=begin comment
 # 检查TSVC文件InDel位点,哪些在hs indel中,哪些不在hs indel中
 my $stat_file_for_ppv = "$outdir/$sample_name\.PPV.xls";
 open PPV, ">$stat_file_for_ppv" or die;
@@ -205,3 +193,6 @@ close TVC;
 #print "tvc_indel_tp\ttvc_indel_fp\ttvc_indel_tp_fp\ttvc_indel_PPV(\%)\n";
 #print "$tvc_indel_tp\t$tvc_indel_fp\t$indel_tp_fp\t$indel_ppv\n";
 
+=end comment
+
+=cut

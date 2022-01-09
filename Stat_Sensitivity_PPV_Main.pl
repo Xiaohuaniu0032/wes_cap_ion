@@ -11,7 +11,7 @@ GetOptions(
 	"fa:s"   => \$fasta,                              # Need
 	"QUAL:i" => \$QUAL_cutoff,                        # Optional <Default: 10>
 	"s:s"    => \$sample_name,                        # Need
-	"gvcf:s" => \$gold_vcf_file,                      # Optional <Default: Bin/indel_hs_2022-1-6-xh/YH-indel.2021-1-6.vcf>
+	"gvcf:s" => \$gold_vcf_file,                      # Optional <Default: Bin/indel_hs_2022-1-6-xh/YH-indel.vcf>
 	"od:s"   => \$outdir,                             # Need
 	) or die "unknown args\n";
 
@@ -27,7 +27,7 @@ if (not defined $QUAL_cutoff){
 }
 
 if (not defined $gold_vcf_file){
-	$gold_vcf_file = "$Bin/indel_hs_2022-1-6-xh/YH-indel.2021-1-6.vcf";
+	$gold_vcf_file = "$Bin/indel_hs_2022-1-6-xh/YH-indel.vcf";
 }
 
 if (!-e $gold_vcf_file){
@@ -66,22 +66,17 @@ print O "$cmd\n\n";
 
 # step4: stat sensitivity and PPV according the gold vcf file
 my $gvcf_name = basename $gold_vcf_file;
-if ($gvcf_name eq "YH-indel.2021-1-6.vcf"){
+if ($gvcf_name eq "YH-indel.vcf"){
 	# only 394 YH indel
 	$cmd = "perl $Bin/script/Only_InDel_Sens_PPV.pl $qual_pass_vcf $gold_vcf_file $sample_name $outdir";
 	print "Calculate only indel Sens/PPV\n";
 	print O "$cmd\n\n";
 
-	# 输出NotCalled的详细信息，从TSVC_variants.vcf得到
+	# 输出热点Indel位点详细的TVC结果信息
 	my $sens_vcf = "$outdir/$sample_name\.Sensitivity.xls";
-	my $not_call_file = "$outdir/$sample_name\.NotCalled.xls";
-	$cmd = "perl $Bin/script/Only_InDel_NotCalled_Detail.pl $sens_vcf $TSVC_variants_vcf_file $not_call_file";
+	my $hs_tvc_info = "$outdir/$sample_name\.HS.InDel.TVC.Info.xls";
+	$cmd = "perl $Bin/script/Only_InDel_Detail_TVC.pl $sens_vcf $norm_vcf $hs_tvc_info";
 	print O "$cmd\n\n";
-
-	# 统计indel热点深度
-	my $depth_rs = "$outdir/$sample_name\.indel.hs.depth.xls";
-	$cmd = "perl $Bin/script/Only_InDel_HS_Depth.pl $gold_vcf_file $TSVC_variants_vcf_file $depth_rs\n";
-	print O "$cmd\n";
 }else{
 	# 统计giab SNV/InDel位点
 	$cmd = "perl $Bin/script/For_giab_NA12878_WES_Sens_PPV.pl $qual_pass_vcf $gold_vcf_file $sample_name $outdir";
