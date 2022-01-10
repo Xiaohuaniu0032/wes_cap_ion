@@ -67,16 +67,41 @@ print O "$cmd\n\n";
 # step4: stat sensitivity and PPV according the gold vcf file
 my $gvcf_name = basename $gold_vcf_file;
 if ($gvcf_name eq "YH-indel.vcf"){
-	# only 394 YH indel
-	$cmd = "perl $Bin/script/Only_InDel_Sens_PPV.pl $qual_pass_vcf $gold_vcf_file $sample_name $outdir";
-	print "Calculate only indel Sens/PPV\n";
+	# three output file
+	my $Sens_file = "$outdir/$sample_name\.Sensitivity.xls";
+	my $PPV_file  = "$outdir/$sample_name\.PPV.xls";
+	my $Sens_PPV_Summary_file = "$outdir/$sample_name\.Sens_PPV_Summary.xls";
+
+	# Sens
+	$cmd = "perl $Bin/script/Stat_Sensitivity.pl $qual_pass_vcf $gold_vcf_file $sample_name $Sens_file $Sens_PPV_Summary_file";
 	print O "$cmd\n\n";
 
-	# 输出热点Indel位点详细的TVC结果信息
-	my $sens_vcf = "$outdir/$sample_name\.Sensitivity.xls";
-	my $hs_tvc_info = "$outdir/$sample_name\.HS.InDel.TVC.Info.xls";
-	$cmd = "perl $Bin/script/Only_InDel_Detail_TVC.pl $sens_vcf $norm_vcf $hs_tvc_info";
+	# PPV
+	my $YH_27M_BED_file = "$Bin/bed_files/YH.bed";
+	$cmd = "perl $Bin/script/Stat_PPV.pl $qual_pass_vcf $YH_27M_BED_file $gold_vcf_file $PPV_file $Sens_PPV_Summary_file";
 	print O "$cmd\n\n";
+
+	# Output Sens TVC Call Detail
+	my $Sens_TVC_detail_outfile = "$outdir/$sample_name\.TVC.Info.Sens.xls";
+	$cmd = "perl $Bin/script/Check_Sens_TVC_Detail.pl $Sens_file $norm_vcf $Sens_TVC_detail_outfile";
+	print O "$cmd\n\n";
+
+	# Output PPV TVC Call Detail
+	my $PPV_TVC_detail_outfile  = "$outdir/$sample_name\.TVC.Info.PPV.xls";	
+	$cmd = "perl $Bin/script/Check_PPV_TVC_Detail.pl $PPV_file $norm_vcf $PPV_TVC_detail_outfile";
+	print O "$cmd\n\n";
+
+	# Summary HS Depth
+	my $depth_summary_file = "$outdir/$sample_name\.HS.InDel.Depth.Summary.xls";
+	$cmd = "perl $Bin/script/HS_InDel_Depth_Summary.pl $Sens_TVC_detail_outfile $depth_summary_file";
+	print O "$cmd\n\n";
+
+	# Summary NoCall Reason
+	my $NoCall_summary_file = "$outdir/$sample_name\.HS.InDel.NoCall.Reason.Summary.xls";
+	$cmd = "perl $Bin/script/HS_InDel_NoCall_Reason_Summary.pl $Sens_TVC_detail_outfile $NoCall_summary_file";
+	print O "$cmd\n\n";
+
+	# Summary False Positive Call Reason
 }else{
 	# 统计giab SNV/InDel位点
 	$cmd = "perl $Bin/script/For_giab_NA12878_WES_Sens_PPV.pl $qual_pass_vcf $gold_vcf_file $sample_name $outdir";
