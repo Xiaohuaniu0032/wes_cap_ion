@@ -15,7 +15,8 @@ open IN, "$Sens_file" or die;
 while (<IN>){
 	chomp;
 	my @arr = split /\t/;
-
+	next if ($arr[-1] eq "NA");
+	
 	my $var = $arr[1]; # chr1.1116188.CG.C
 	my @var = split /\./, $var;
 	

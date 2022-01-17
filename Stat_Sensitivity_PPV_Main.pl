@@ -44,18 +44,33 @@ if (!-e $gold_vcf_file){
 my $runsh = "$outdir/$sample_name\.sens.ppv.sh";
 open O, ">$runsh" or die;
 
+# step0: remove dup vars in TSVC_variants.vcf
+my $rmdup_vcf = "$outdir/$sample_name\.TSVC_variants.rmdup.vars.vcf";
+my $log = "$outdir/rm.dup.log";
+if (-e $log){
+	`rm $log`;
+}
+my $cmd = "perl $Bin/script/rmdup_vars.pl $TSVC_variants_vcf_file $rmdup_vcf";
+print O "$cmd\n\n";
+
 # step1: bcf norm => indel left align and indel unify presentation
 # see https://samtools.github.io/bcftools/bcftools.html#norm for detail.
 # -m:split multiallelics (-) or join biallelics (+)
 # -c:check REF alleles and exit (e), warn (w), exclude (x), or set (s)
 
 my $norm_vcf = "$outdir/$sample_name\.TSVC_variants.bcfnorm.vcf";
-my $cmd = "bcftools norm -f $fasta -m - -c w $TSVC_variants_vcf_file >$norm_vcf";
+#$cmd = "bcftools norm -f $fasta -m - -c w $TSVC_variants_vcf_file >$norm_vcf";
+$cmd = "bcftools norm -f $fasta -m - -c w $rmdup_vcf >$norm_vcf";
+print O "$cmd\n\n";
+
+# bcf norm again will generate dup tvc
+my $norm_rmdup_vcf = "$outdir/$sample_name\.TSVC_variants.bcfnorm.rmdup.vcf";
+$cmd = "perl $Bin/script/rmdup_vars.pl $norm_vcf $norm_rmdup_vcf";
 print O "$cmd\n\n";
 
 # step2: remove 0/0 and ./. genotype call
 my $gt_filter_vcf = "$outdir/$sample_name\.TSVC_variants.bcfnorm.gt_filter.vcf";
-$cmd = "perl $Bin/script/filter_bcfnorm_vcf.pl $norm_vcf $gt_filter_vcf";
+$cmd = "perl $Bin/script/filter_bcfnorm_vcf.pl $norm_rmdup_vcf $gt_filter_vcf";
 print O "$cmd\n\n";
 
 # step3: filter QUAL
@@ -88,7 +103,7 @@ if ($gvcf_name eq "YH-indel.vcf"){
 
 	# Output PPV TVC Call Detail
 	my $PPV_TVC_detail_outfile  = "$outdir/$sample_name\.TVC.Info.PPV.xls";	
-	$cmd = "perl $Bin/script/Check_PPV_TVC_Detail.pl $PPV_file $norm_vcf $PPV_TVC_detail_outfile";
+	$cmd = "perl $Bin/script/Check_PPV_TVC_Detail.pl $PPV_file $PPV_TVC_detail_outfile";
 	print O "$cmd\n\n";
 
 	# Summary HS Depth
@@ -99,6 +114,16 @@ if ($gvcf_name eq "YH-indel.vcf"){
 	# Summary NoCall Reason
 	my $NoCall_summary_file = "$outdir/$sample_name\.HS.InDel.NoCall.Reason.Summary.xls";
 	$cmd = "perl $Bin/script/HS_InDel_NoCall_Reason_Summary.pl $Sens_TVC_detail_outfile $NoCall_summary_file";
+	print O "$cmd\n\n";
+
+	# Make TVC Pos BED (used to check tp and fp vars)
+	my $tp_fp_bed = "$outdir/$sample_name\.TP.FP.BED";
+	$cmd = "perl $Bin/script/Make_TP_FP_BED.pl $PPV_file $tp_fp_bed";
+	print O "$cmd\n\n";
+
+	# plot TP vs FP's MLLD & RBI plot
+	my $tp_fp_table = "$outdir/$sample_name\.TP.FP.MLLD.RBI.xls";
+	$cmd = "perl $Bin/script/make_TP_FP_plot_RBI_MLLD_table.pl $PPV_TVC_detail_outfile $tp_fp_table";
 	print O "$cmd\n\n";
 
 	# Summary False Positive Call Reason

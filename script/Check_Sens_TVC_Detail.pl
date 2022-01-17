@@ -27,7 +27,7 @@ while (<TVC>){
 	my ($QUAL,$MLLD,$RBI,$STB,$Call_Res,$FR) = qw/NA NA NA NA NA NA/;
 	my ($AO,$FAO,$DP,$FDP,$AF,$GT)           = qw/NA NA NA NA NA NA/;
 	
-	$QUAL     = "GQ=".int($arr[5]);
+	$QUAL     = "QUAL=".int($arr[5]);
 	$Call_Res = $arr[6];
 
 	my $var = "$arr[0]\.$arr[1]\.$arr[3]\.$arr[4]"; # chr/pos/ref/alt
