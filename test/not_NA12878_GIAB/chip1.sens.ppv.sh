@@ -1,6 +1,10 @@
-bcftools norm -f /data/fulongfei/database/ref/hg19/hg19.fasta -m - -c w /data/fulongfei/git_repo/wes_cap_ion/test/chip1.TSVC_variants.vcf >/data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.bcfnorm.vcf
+perl /data/fulongfei/git_repo/wes_cap_ion/script/rmdup_vars.pl /data/fulongfei/git_repo/wes_cap_ion/test/chip1.TSVC_variants.vcf /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.rmdup.vars.vcf
 
-perl /data/fulongfei/git_repo/wes_cap_ion/script/filter_bcfnorm_vcf.pl /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.bcfnorm.vcf /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.bcfnorm.gt_filter.vcf
+bcftools norm -f /data/fulongfei/database/ref/hg19/hg19.fasta -m - -c w /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.rmdup.vars.vcf >/data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.bcfnorm.vcf
+
+perl /data/fulongfei/git_repo/wes_cap_ion/script/rmdup_vars.pl /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.bcfnorm.vcf /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.bcfnorm.rmdup.vcf
+
+perl /data/fulongfei/git_repo/wes_cap_ion/script/filter_bcfnorm_vcf.pl /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.bcfnorm.rmdup.vcf /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.bcfnorm.gt_filter.vcf
 
 perl /data/fulongfei/git_repo/wes_cap_ion/script/filter_QUAL.pl /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.bcfnorm.gt_filter.vcf 10 /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.bcfnorm.gt_filter.qual_pass.vcf >/data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.bcfnorm.gt_filter.qual_nopass.vcf
 
@@ -10,9 +14,13 @@ perl /data/fulongfei/git_repo/wes_cap_ion/script/Stat_PPV.pl /data/fulongfei/git
 
 perl /data/fulongfei/git_repo/wes_cap_ion/script/Check_Sens_TVC_Detail.pl /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.Sensitivity.xls /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.bcfnorm.vcf /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TVC.Info.Sens.xls
 
-perl /data/fulongfei/git_repo/wes_cap_ion/script/Check_PPV_TVC_Detail.pl /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.PPV.xls /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TSVC_variants.bcfnorm.vcf /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TVC.Info.PPV.xls
+perl /data/fulongfei/git_repo/wes_cap_ion/script/Check_PPV_TVC_Detail.pl /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.PPV.xls /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TVC.Info.PPV.xls
 
 perl /data/fulongfei/git_repo/wes_cap_ion/script/HS_InDel_Depth_Summary.pl /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TVC.Info.Sens.xls /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.HS.InDel.Depth.Summary.xls
 
 perl /data/fulongfei/git_repo/wes_cap_ion/script/HS_InDel_NoCall_Reason_Summary.pl /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TVC.Info.Sens.xls /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.HS.InDel.NoCall.Reason.Summary.xls
+
+perl /data/fulongfei/git_repo/wes_cap_ion/script/Make_TP_FP_BED.pl /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.PPV.xls /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TP.FP.BED
+
+perl /data/fulongfei/git_repo/wes_cap_ion/script/make_TP_FP_plot_RBI_MLLD_table.pl /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TVC.Info.PPV.xls /data/fulongfei/git_repo/wes_cap_ion/test/not_NA12878_GIAB/chip1.TP.FP.MLLD.RBI.xls
 
