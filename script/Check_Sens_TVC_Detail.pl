@@ -27,7 +27,8 @@ while (<TVC>){
 	my ($QUAL,$MLLD,$RBI,$STB,$Call_Res,$FR) = qw/NA NA NA NA NA NA/;
 	my ($AO,$FAO,$DP,$FDP,$AF,$GT)           = qw/NA NA NA NA NA NA/;
 	
-	$QUAL     = "QUAL=".int($arr[5]);
+	#$QUAL     = "QUAL=".int($arr[5]);
+	$QUAL     = int($arr[5]);
 	$Call_Res = $arr[6];
 
 	my $var = "$arr[0]\.$arr[1]\.$arr[3]\.$arr[4]"; # chr/pos/ref/alt
@@ -37,7 +38,7 @@ while (<TVC>){
 	my @alt_detail = split /\;/, $alt_detail;
 	for my $item (@alt_detail){
 		if ($item =~ /MLLD=/){
-			$MLLD = $item;
+			$MLLD = (split /\=/, $item)[1];
 		}
 
 		if ($item =~ /FR=/){
@@ -45,11 +46,11 @@ while (<TVC>){
 		}
 
 		if ($item =~ /RBI=/){
-			$RBI = $item;
+			$RBI = (split /\=/, $item)[1];
 		}
 
 		if ($item =~ /STB=/){
-			$STB = $item;
+			$STB = (split /\=/, $item)[1];
 		}
 	}
 

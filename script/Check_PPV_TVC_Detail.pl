@@ -31,7 +31,8 @@ while (<IN>){
 
 	my @info = split /\:/, $arr[-1];
 	my $gt   = $info[0];
-	my $qual = "GQ=".$info[1];
+	#my $qual = "GQ=".$info[1];
+	my $qual = "QUAL=".int($arr[6]);
 	my $AO   = "AO=".$info[6];
 	my $FAO  = "FAO=".$info[7];
 	my $DP   = "DP=".$info[2];
@@ -43,13 +44,13 @@ while (<IN>){
 
 	my @info2 = split /\;/, $arr[8];
 	for my $item (@info2){
-		if ($item =~ /^MLLD/){
+		if ($item =~ /^MLLD=/){
 			$MLLD = $item
 		}
-		if ($item =~ /^STB/){
+		if ($item =~ /^STB=/){
 			$STB = $item
 		}
-		if ($item =~ /^RBI/){
+		if ($item =~ /^RBI=/){
 			$RBI = $item;
 		}
 		if ($item =~ /^FR=/){
