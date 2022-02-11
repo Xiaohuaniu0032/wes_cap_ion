@@ -17,7 +17,7 @@
 
         "data_quality_stringency":5.0,
         "hp_max_length":8,
-        "filter_unusual_predictions":0.25,
+        "filter_unusual_predictions":0.3,
         "filter_insertion_predictions": 0.2,
         "filter_deletion_predictions": 0.2,
         "indel_as_hpindel": 1,
